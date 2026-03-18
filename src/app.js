@@ -1,16 +1,25 @@
-// const express = require("express");
 import express from "express";
+import usuarioRouter from "./routes/usuarioRoutes.js";
+import jogosRouter from "./routes/jogosRoutes.js";
+import playersRoutes from "./routes/playersRoutes.js";
+import rankingRoutes from './routes/rankingRoutes.js';
+import partidaRoutes from "./routes/partidaRoutes.js";
 import cors from "cors";
-import usuarioRoutes from "./routes/usuarioRoutes.js";
+
 
 const app = express();
-app.use(express.json()); //Formato JSON
-app.use(cors()); // Conexao back com front
+app.use(cors());
 
-app.get("/", (req,res)=>{
-    res.json({mensagem: "Hello World!"})
-})
 
-app.use("/usuarios", usuarioRoutes);
+app.use(express.json());
+app.use("/usuarios", usuarioRouter);
+app.use("/jogos", jogosRouter);
+app.use("/players", playersRoutes);
+app.use('/rankings', rankingRoutes);
+app.use("/partidas", partidaRoutes);
 
-export default app
+// app.use("/partidas", partidasRouter);
+
+
+
+export default app;
