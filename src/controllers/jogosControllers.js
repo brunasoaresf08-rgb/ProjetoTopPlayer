@@ -1,75 +1,66 @@
-import * as jogosModel from "../models/jogosModels.js";
+import {pool}  from "../config/db.js";
 
+export async function listarJogos (req, res) {
+  try {
+    const [rows] = await pool.query("SELECT * FROM jogos");
+    res.json(rows);
+  }catch (error) {
+    res.status(500).json({ erro: "Erro ao listar jogos" });
+  }
+};
 
-export async function listarJogos(req, res) {
-    const jogos = await jogosModel.listarJogos();
-    res.status(200).json(jogos);
-    
-}
-
-export async function BuscarJogosPorId(req, res) {
+export async function buscarJogo (req, res) {
+  try {
     const { id } = req.params;
-    const jogos = await jogosModel.BuscarJogosPorId(id);
 
-    if (!jogos) {
-        res.status(404).json({ msg: "Jogo não encontrado" });
+    const [rows] = await pool.query(
+      "SELECT * FROM jogos WHERE id = ?",
+      [id]
+    );
+    if (!rows.length) {
+      return res.status(404).json({ erro: "Jogo não encontrado" });
     }
-    res.status(200).json(jogos);
-    
-}
+    res.json(rows[0]);
+  }catch (error) {
+    res.status(500).json({ erro: "Erro ao buscar jogo" });
+  }
+};
 
-export async function criarJogos(req, res) {
+export async function criarJogo (req, res) {
+  try {
+    const { nome, genero } = req.body;
+    const [result] = await pool.query(
+      "INSERT INTO jogos (nome, genero) VALUES (?, ?)",
+      [nome, genero]
+    );
+    res.status(201).json({ id: result.insertId });
+  }catch (error) {
+    res.status(500).json({ erro: "Erro ao criar jogo" });
+  }
+};
+
+export async function atualizarJogo (req, res) {
+  try {
+    const { id } = req.params;
     const { nome, genero } = req.body;
 
-    if (!nome || !genero) {
-        return res.status(400).json({ msg: "Nome e Gênero são obrigatórios" });
-    }
+    await pool.query(
+      "UPDATE jogos SET nome = ?, genero = ? WHERE id = ?",
+      [nome, genero, id]
+    );
+    res.json({ mensagem: "Jogo atualizado" });
+  }catch (error) {
+    res.status(500).json({ erro: "Erro ao atualizar jogo" });
+  }
+};
 
-    try {
-        const novoId = await jogosModel.criarJogos({ nome, genero });
-        return res.status(201).json({
-            msg: "Jogo cadastrado com sucesso",
-            id: novoId
-        });
-    } catch (erro) {
-        console.error("Erro ao cadastrar jogo:", erro);
-        return res.status(500).json({ msg: "Erro interno ao cadastrar o jogo" });
-    }
-}
-
-
-export async function atualizarJogos(req, res) {
-    const { id } = req.params;
-    const {nome, genero } = req.body;
-
-    if (!nome || !genero) {
-        return res.status(400).json({ msg: "Nome e gênero são obrigatórios" });
-    }
-
-    const jogos = await jogosModel.BuscarJogosPorId(id);
-
-    if (!jogos) {
-        return res.status(404).json({ msg: "Jogo não encontrado" });
-    }
-
-    await jogosModel.atualizarJogos(id, { nome, genero });
-
-    return res.status(200).json({ msg: "Jogo atualizado com sucesso" });
-    
-}
-
-export async function deletarJogos(req, res) {
-
+export async function deletarJogo (req, res) {
+  try {
     const { id } = req.params;
 
-    const jogos = await jogosModel.BuscarJogosPorId(id);
-
-    if (!jogos) {
-        return res.status(404).json({ msg: "Jogo não encontrado" });
-    }
-
-    await jogosModel.deletarJogos(id);
-
-    return res.status(200).json({ msg: "Jogo deletado com sucesso" });
-
-}
+    await pool.query("DELETE FROM jogos WHERE id = ?", [id]);
+    res.json({ mensagem: "Jogo deletado" });
+  }catch (error) {
+    res.status(500).json({ erro: "Erro ao deletar jogo" });
+  }
+};

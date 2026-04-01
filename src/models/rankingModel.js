@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js";
+import {pool} from "../config/db.js";
 
 export async function rankingPorJogo(jogo_id, limite = 10) {
     const [rows] = await pool.query(

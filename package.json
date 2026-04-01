@@ -4,14 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --silent",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
   "type": "module",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
     "crypto": "^1.0.1",
@@ -20,6 +20,8 @@
     "mysql2": "^3.18.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
   }
 }

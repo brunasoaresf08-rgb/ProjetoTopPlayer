@@ -1,14 +1,18 @@
-import { Router } from "express";
-import * as jogosController from "../controllers/jogosControllers.js";
+import express from "express";
+import {
+  listarJogos,
+  buscarJogo,
+  criarJogo,
+  atualizarJogo,
+  deletarJogo
+} from "../controllers/jogoController.js";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/", jogosController.listarJogos);
-router.get("/:id", jogosController.BuscarJogosPorId);
-router.post("/", jogosController.criarJogos);
-router.put("/:id", jogosController.atualizarJogos);
-router.delete("/:id", jogosController.deletarJogos);
-
-
+router.get("/", listarJogos);
+router.get("/:id", buscarJogo);
+router.post("/", criarJogo);
+router.put("/:id", atualizarJogo);
+router.delete("/:id", deletarJogo);
 
 export default router;

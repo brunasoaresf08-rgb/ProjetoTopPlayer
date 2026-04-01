@@ -1,7 +1,7 @@
 import * as usuarioModel from "../models/usuarioModel.js";
 import crypto from "crypto";
 
-export async function listar(req, res) {
+export async function listarUsuarios(req, res) {
     const usuario = await usuarioModel.listarUsuarios();
     res.status(200).json(usuario);
 
@@ -20,7 +20,7 @@ export async function buscarPorId(req, res) {
 
 }
 
-export async function criar(req, res) {
+export async function criarUsuario(req, res) {
     const { nome, email, senha } = req.body;
 
     if (!nome || !email || !senha) {
@@ -31,10 +31,10 @@ export async function criar(req, res) {
     const senha_hash = crypto.createHash("sha256").update(senha).digest("hex");
     const id = await usuarioModel.criarUsuario({ nome, email, senha_hash });
 
-    return res.status(201).json({ msg: "Usuário criado com sucesso" });
+    return res.status(201).json({ msg: "Usuário criado com sucesso", id });
 }
 
-export async function login(req, res) {
+export async function loginDoUsuario(req, res) {
 
     const { email, senha } = req.body;
 
@@ -66,10 +66,13 @@ export async function login(req, res) {
 
 }
 
-export async function atualizarusuarios(req, res) {
+export async function atualizarUsuario(req, res) {
+    console.log("Requisição recebida para atualizar usuário");
     const {id } = req.params;
     const { nome, email, senha } = req.body;
 
+    console.log("ID do usuário a ser atualizado:", id);
+    console.log("Dados recebidos para atualização:", { nome, email, senha });
     if ( !nome || !email || !senha) {
         return res.status(400).json({ msg: "Nome, email e senha são obrigatórios" });
     }
@@ -81,6 +84,8 @@ export async function atualizarusuarios(req, res) {
     }
 
     const senha_hash = crypto.createHash("sha256").update(senha).digest("hex");
+
+    console.log("Hash da senha:", senha_hash);
     const atualizado = await usuarioModel.atualizarusuarios(id, { nome, email, senha_hash });
 
     if (!atualizado) {
@@ -107,3 +112,16 @@ export async function deletarusuarios(req, res) {
 
     return res.status(200).json({ msg :"Usuário deletado com sucesso!"});
 }
+
+
+
+export async function deletarUsuario (req, res) {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
+    res.json({ mensagem: "Usuário deletado" });
+  } catch (error) {
+    res.status(500).json({ erro: "Erro ao deletar usuário" });
+  }
+};

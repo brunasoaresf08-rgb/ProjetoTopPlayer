@@ -1,82 +1,77 @@
-import * as playersModel from "../models/playersModels.js";
+import {pool} from "../config/db.js";
 
+export async function listarPlayers (req, res) {
+  try {
+    const [rows] = await pool.query("SELECT * FROM players");
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Erro ao listar players" });
+  }
+};
 
-export async function listarPlayers(req, res) {
-    const players = await playersModel.listarPlayers();
-    res.status(200).json(players);
-}
-
-
-export async function BuscarPlayerPorId(req, res) {
+export async function buscarPlayer (req, res) {
+  try {
     const { id } = req.params;
-    const player = await playersModel.BuscarPlayerPorId(id);
 
-    if (!player) {
-        res.status(404).json({ msg: "Player não encontrado" });
+    const [rows] = await pool.query(
+      "SELECT * FROM players WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: "Player não encontrado" });
     }
-    
-    res.status(200).json(player);
-}
 
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Erro ao buscar player" });
+  }
+};
 
-
-export async function criarPlayer(req, res) {
+export async function criarPlayer (req, res){
+  try {
     const { nickname, plataforma } = req.body;
 
-    if (!nickname || !plataforma) {
-        return res.status(400).json({ msg: "Nickname e plataforma são obrigatórios" });
-    }
+    const [result] = await pool.query(
+      "INSERT INTO players (nickname, plataforma) VALUES (?, ?)",
+      [nickname, plataforma]
+    );
 
-    try {
-        const novoId = await playersModel.criarPlayer({ nickname, plataforma });
-        return res.status(201).json({
-            msg: "Player cadastrado com sucesso",
-            id: novoId,
-        });
-    } catch (erro) {
-        console.error("Erro ao cadastrar player:", erro);
-        return res.status(500).json({ msg: "Erro interno ao cadastrar o player" });
-    }
-}
+    res.status(201).json({ id: result.insertId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Erro ao criar player" });
+  }
+};
 
-
-export async function atualizarPlayer(req, res) {
+export async function atualizarPlayer (req, res) {
+  try {
     const { id } = req.params;
     const { nickname, plataforma } = req.body;
 
-    if (!nickname || !plataforma) {
-        return res.status(400).json({ msg: "Nickname e plataforma são obrigatórios" });
-    }
+    const [result] = await pool.query(
+      "UPDATE players SET nickname = ?, plataforma = ? WHERE id = ?",
+      [nickname, plataforma, id]
+    );
 
-    const player = await playersModel.BuscarPlayerPorId(id);
+    res.json({ mensagem: "Player atualizado com sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Erro ao atualizar player" });
+  }
+};
 
-    if (!player) {
-        return res.status(404).json({ msg: "Player não encontrado" });
-    }
-
-    const atualizado = await playersModel.atualizarPlayer(id, { nickname, plataforma });
-
-    if (!atualizado) {
-        return res.status(500).json({ msg: "Não foi possível atualizar o player" });
-    }
-
-    return res.status(200).json({ msg: "Player atualizado com sucesso" });
-}
-
-export async function deletarPlayer(req, res) {
+export async function deletarPlayer (req, res) {
+  try {
     const { id } = req.params;
 
-    const player = await playersModel.BuscarPlayerPorId(id);
+    await pool.query("DELETE FROM players WHERE id = ?", [id]);
 
-    if (!player) {
-        return res.status(404).json({ msg: "Player não encontrado" });
-    }
-
-    const deletado = await playersModel.deletarPlayer(id);
-
-    if (!deletado) {
-        return res.status(500).json({ msg: "Não foi possível deletar o player" });
-    }
-
-    return res.status(200).json({ msg: "Player deletado com sucesso" });
-}
+    res.json({ mensagem: "Player deletado" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: "Erro ao deletar player" });
+  }
+};
