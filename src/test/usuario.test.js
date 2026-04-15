@@ -46,7 +46,7 @@ describe('Testes da API de Usuários', () => {
 
     test('POST /usuarios/login deve autenticar com sucesso', async () => {
         const credenciais = {
-            email: emailTeste, // Usa o mesmo email criado no primeiro teste
+            email: emailTeste, 
             senha: "senha123"
         };
 
@@ -61,11 +61,9 @@ describe('Testes da API de Usuários', () => {
 
 
     test('DELETE /usuarios/:id deve remover o usuário após um tempo', async () => {
-        // Agora usamos o ID que foi guardado lá no primeiro teste
 
         console.log("Aguardando 3 segundos antes de deletar...");
-        await sleep(3000); // Espera 3000ms (3 segundos)
-       
+        await sleep(3000); 
         const response = await request(app).delete(`/usuarios/${usuarioId}`);
 
         expect(response.statusCode).toBe(200);

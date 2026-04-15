@@ -6,7 +6,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 describe('Testes da API de Players', () => {
-    let playerID; // Variável para guardar o ID do player dinâmico
+    let playerID; 
 
     test('POST /players deve criar um novo player', async () => {
         const novoPlayer = {
@@ -21,11 +21,11 @@ describe('Testes da API de Players', () => {
         expect(response.statusCode).toBe(201);
         expect(response.body).toHaveProperty('id');
        
-        playerID = response.body.id; // Salva o ID para os próximos testes
+        playerID = response.body.id; 
     });
 
     test('PUT /players/:id deve atualizar um player existente', async () => {
-        // Importante: vamos atualizar apenas o nome para não perder o rastro do email no login
+      
         const dadosAtualizados = {
             nickname: "novoNickname",
             plataforma: "PC"    

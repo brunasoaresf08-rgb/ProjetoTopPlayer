@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../app.js';
 
+//
 describe('Testes da API Express', () => {
 
   test('GET / deve retornar status da API', async () => {

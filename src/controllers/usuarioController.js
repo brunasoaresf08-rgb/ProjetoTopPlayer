@@ -115,13 +115,3 @@ export async function deletarusuarios(req, res) {
 
 
 
-export async function deletarUsuario (req, res) {
-  try {
-    const { id } = req.params;
-
-    await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
-    res.json({ mensagem: "Usuário deletado" });
-  } catch (error) {
-    res.status(500).json({ erro: "Erro ao deletar usuário" });
-  }
-};
