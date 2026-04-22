@@ -1,37 +1,39 @@
-// import request from "supertest";
-// import app from "../app.js";
-// import { pool } from "../config/db.js";
+import request from "supertest";
+import app from "../app.js";
+import { pool } from "../config/db.js";
 
-// let jogoId;
+let jogoId;
+let playerId;
 
-// beforeAll(async () => {
-//   await pool.query("SET FOREIGN_KEY_CHECKS = 0");
-//   await pool.query("TRUNCATE TABLE jogos");
-//   await pool.query("SET FOREIGN_KEY_CHECKS = 1");
+beforeAll(async () => {
+  const [jogo] = await pool.query(
+    "INSERT INTO jogos (nome, genero) VALUES (?, ?)",
+    ["Jogo Ranking", "acao"]
+  );
+  jogoId = jogo.insertId;
 
-//   const nomeJogo = `Jogo ${Date.now()}-${Math.random()}`;
+  const [player] = await pool.query(
+    "INSERT INTO players (nickname) VALUES (?)",
+    ["Player Ranking"]
+  );
+  playerId = player.insertId;
 
-//   const [result] = await pool.query(
-//     "INSERT INTO jogos (nome, genero) VALUES (?, ?)",
-//     [nomeJogo, "Sports"]
-//   );
+  await pool.query(
+    "INSERT INTO partidas (player_id, jogo_id, pontos) VALUES (?, ?, ?)",
+    [playerId, jogoId, 100]
+  );
+});
 
-//   jogoId = result.insertId;
-// });
+test("GET /rankings/geral deve retornar ranking", async () => {
+  const res = await request(app).get("/rankings/geral");
 
-// afterAll(async () => {
-//   await pool.end();
-// });
+  expect(res.statusCode).toBe(200);
+  expect(Array.isArray(res.body)).toBe(true);
+});
 
-// test("GET /rankings/geral deve retornar ranking", async () => {
-//   const response = await request(app).get("/rankings/geral");
+test("GET /rankings/jogo/:jogo_id deve retornar ranking por jogo", async () => {
+  const res = await request(app).get(`/rankings/jogo/${jogoId}`);
 
-//   expect(response.statusCode).toBe(200);
-//   expect(Array.isArray(response.body)).toBe(true);
-// });
-
-// test("GET /rankings/jogo/:id deve retornar ranking por jogo", async () => {
-//   const response = await request(app).get(`/rankings/jogo/${jogoId}`);
-
-//   expect(response.statusCode).toBe(200);
-// });
+  expect(res.statusCode).toBe(200);
+  expect(Array.isArray(res.body)).toBe(true);
+});

@@ -7,14 +7,14 @@ let playerId;
 let partidaId;
 
 beforeAll(async () => {
-  // limpa banco pra não dar conflito
+  
   await pool.query("SET FOREIGN_KEY_CHECKS = 0");
   await pool.query("TRUNCATE TABLE partidas");
   await pool.query("TRUNCATE TABLE jogos");
   await pool.query("TRUNCATE TABLE players");
   await pool.query("SET FOREIGN_KEY_CHECKS = 1");
 
-  // cria jogo com nome único
+  
   const nomeJogo = `Jogo ${Date.now()}-${Math.random()}`;
   const nomePlayer = `Player ${Date.now()}-${Math.random()}`;
 
@@ -31,7 +31,7 @@ beforeAll(async () => {
   jogoId = jogoResult.insertId;
   playerId = playerResult.insertId;
 
-  // cria partida via API
+  
   const res = await request(app)
     .post("/partidas")
     .send({
@@ -40,17 +40,16 @@ beforeAll(async () => {
       pontos: 100
     });
 
-  // DEBUG (se der erro você vai ver aqui)
   console.log("POST /partidas response:", res.body);
 
-  // pega ID de forma segura (porque sua API pode variar)
+  
   partidaId =
     res.body.id ||
     res.body.insertId ||
     res.body.partida_id;
 
   if (!partidaId) {
-    throw new Error("❌ partidaId não foi retornado pela API. Verifique o POST /partidas");
+    throw new Error("Partida ID não encontrada. Resposta: " + JSON.stringify(res.body));
   }
 });
 

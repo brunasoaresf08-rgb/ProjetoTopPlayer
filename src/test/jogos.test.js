@@ -1,12 +1,12 @@
 import request from "supertest";
 import app from "../app.js";
-import { pool } from "../config/db.js"; // ajuste o caminho se necessário
+import { pool } from "../config/db.js"; 
 
 describe("Testes da API de Jogos", () => {
   let jogoId;
 
   beforeAll(async () => {
-    // garante que a tabela existe (evita erro 500)
+   
     await pool.query(`
       CREATE TABLE IF NOT EXISTS jogos (
         id INT AUTO_INCREMENT PRIMARY KEY,

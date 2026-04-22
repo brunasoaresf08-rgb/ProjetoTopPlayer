@@ -1,23 +1,21 @@
 import express from "express";
 import {
-    listarUsuarios,
-    atualizarUsuario,
-    buscarPorId,
-    criarUsuario,
-    loginDoUsuario,
-    
-    deletarusuarios
+  criarUsuario,
+  loginUsuario,
+  atualizarUsuario,
+  deletarUsuario,
+  listarUsuarios,
+  buscarUsuarioPorId
 } from "../controllers/usuarioController.js";
 
-const route = express.Router();
-
-route.post("/login", loginDoUsuario);
-route.get("/", listarUsuarios);
-route.put("/:id", atualizarUsuario);
-route.get("/:id", buscarPorId);
-route.post("/", criarUsuario);
+const router = express.Router();
 
 
-route.delete("/:id", deletarusuarios);
+router.get("/", listarUsuarios);
+router.get("/:id", buscarUsuarioPorId);
+router.post("/", criarUsuario);
+router.post("/login", loginUsuario);
+router.put("/:id", atualizarUsuario);
+router.delete("/:id", deletarUsuario);
 
-export default route;
+export default router;

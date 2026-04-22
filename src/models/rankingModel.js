@@ -1,13 +1,14 @@
 import { pool } from "../config/db.js";
 
-export async function rankingGeral(limite = 10) {
+// Ranking geral
+export async function buscarRankingGeral(limite = 10) {
   const [rows] = await pool.query(`
     SELECT 
-      players.id AS player_id,
+      players.id,
       players.nickname,
-      SUM(partidas.pontos) AS total_pontos
-    FROM partidas
-    JOIN players ON players.id = partidas.player_id
+      COALESCE(SUM(partidas.pontos), 0) AS total_pontos
+    FROM players
+    LEFT JOIN partidas ON players.id = partidas.player_id
     GROUP BY players.id
     ORDER BY total_pontos DESC
     LIMIT ?
@@ -16,12 +17,13 @@ export async function rankingGeral(limite = 10) {
   return rows;
 }
 
-export async function rankingPorJogo(jogo_id, limite = 10) {
+// Ranking por jogo
+export async function buscarRankingPorJogo(jogo_id, limite = 10) {
   const [rows] = await pool.query(`
     SELECT 
-      players.id AS player_id,
+      players.id,
       players.nickname,
-      SUM(partidas.pontos) AS total_pontos
+      COALESCE(SUM(partidas.pontos), 0) AS total_pontos
     FROM partidas
     JOIN players ON players.id = partidas.player_id
     WHERE partidas.jogo_id = ?
