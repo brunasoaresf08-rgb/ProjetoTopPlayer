@@ -7,7 +7,7 @@ export async function listarPlayers() {
     return resultado;
 }
 
-export async function BuscarPlayerPorId(id) {
+export async function buscarPlayerPorId(id) {
     const [resultado] = await pool.query(
         "SELECT id, nickname, plataforma, criado_em FROM players WHERE id = ?", [id]
     );

@@ -5,7 +5,7 @@ import {
   buscarPlayer,
   atualizarPlayer,
   deletarPlayer
-} from "../controllers/playersController.js";
+} from "../controllers/playersControllers.js";
 
 const router = express.Router();
 
@@ -15,9 +15,6 @@ const router = express.Router();
  *   get:
  *     summary: Listar players
  *     tags: [Players]
- *     responses:
- *       200:
- *         description: Lista de players
  */
 router.get("/", listarPlayers);
 
@@ -36,6 +33,18 @@ router.get("/:id", buscarPlayer);
  *   post:
  *     summary: Criar player
  *     tags: [Players]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nickname, plataforma]
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *               plataforma:
+ *                 type: string
  */
 router.post("/", criarPlayer);
 
@@ -45,6 +54,17 @@ router.post("/", criarPlayer);
  *   put:
  *     summary: Atualizar player
  *     tags: [Players]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *               plataforma:
+ *                 type: string
  */
 router.put("/:id", atualizarPlayer);
 

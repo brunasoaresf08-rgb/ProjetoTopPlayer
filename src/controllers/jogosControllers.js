@@ -34,7 +34,7 @@ export async function listarJogos(req, res) {
     res.status(500).json({ erro: "Erro ao listar jogos" });
   }
 }
-export async function buscarJogo(req, res) {
+export async function buscarJogoId(req, res) {
   try {
     const { id } = req.params;
 

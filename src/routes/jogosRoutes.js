@@ -2,10 +2,10 @@ import express from "express";
 import {
   criarJogo,
   listarJogos,
-  buscarJogoPorId,
+  buscarJogoId,
   atualizarJogo,
   deletarJogo
-} from "../controllers/jogosController.js";
+} from "../controllers/jogosControllers.js"; 
 
 const router = express.Router();
 
@@ -13,11 +13,8 @@ const router = express.Router();
  * @swagger
  * /jogos:
  *   get:
- *     summary: Listar todos os jogos
+ *     summary: Listar jogos
  *     tags: [Jogos]
- *     responses:
- *       200:
- *         description: Lista de jogos
  */
 router.get("/", listarJogos);
 
@@ -27,17 +24,9 @@ router.get("/", listarJogos);
  *   get:
  *     summary: Buscar jogo por ID
  *     tags: [Jogos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Jogo encontrado
  */
-router.get("/:id", buscarJogoPorId);
+
+router.get("/:id", buscarJogoId);
 
 /**
  * @swagger
@@ -51,12 +40,12 @@ router.get("/:id", buscarJogoPorId);
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [nome, genero]
  *             properties:
  *               nome:
  *                 type: string
- *     responses:
- *       201:
- *         description: Jogo criado
+ *               genero:
+ *                 type: string
  */
 router.post("/", criarJogo);
 
@@ -66,15 +55,17 @@ router.post("/", criarJogo);
  *   put:
  *     summary: Atualizar jogo
  *     tags: [Jogos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Jogo atualizado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               genero:
+ *                 type: string
  */
 router.put("/:id", atualizarJogo);
 
@@ -84,15 +75,6 @@ router.put("/:id", atualizarJogo);
  *   delete:
  *     summary: Deletar jogo
  *     tags: [Jogos]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Jogo deletado
  */
 router.delete("/:id", deletarJogo);
 

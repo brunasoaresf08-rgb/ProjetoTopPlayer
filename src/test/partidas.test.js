@@ -42,7 +42,6 @@ beforeAll(async () => {
 
   console.log("POST /partidas response:", res.body);
 
-  
   partidaId =
     res.body.id ||
     res.body.insertId ||

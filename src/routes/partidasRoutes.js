@@ -1,12 +1,13 @@
-import express from "express";
+import { Router } from "express";
 import {
-  criarPartida,
-  listarPartidas,
-  atualizarPartida,
-  deletarPartida
-} from "../controllers/partidasController.js";
+    listarPartidas,
+    buscarPartidaPorId,
+    criarPartida,
+    atualizarPartida,
+    deletarPartida
+} from "../controllers/partidasControllers.js";
 
-const router = express.Router();
+const router = Router();
 
 /**
  * @swagger
@@ -19,10 +20,33 @@ router.get("/", listarPartidas);
 
 /**
  * @swagger
+ * /partidas/{id}:
+ *   get:
+ *     summary: Buscar partida por ID
+ *     tags: [Partidas]
+ */
+router.get("/:id", buscarPartidaPorId);
+
+/**
+ * @swagger
  * /partidas:
  *   post:
  *     summary: Criar partida
  *     tags: [Partidas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [jogo_id, player_id, pontos]
+ *             properties:
+ *               jogo_id:
+ *                 type: integer
+ *               player_id:
+ *                 type: integer
+ *               pontos:
+ *                 type: integer
  */
 router.post("/", criarPartida);
 
@@ -32,6 +56,15 @@ router.post("/", criarPartida);
  *   put:
  *     summary: Atualizar partida
  *     tags: [Partidas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pontos:
+ *                 type: integer
  */
 router.put("/:id", atualizarPartida);
 

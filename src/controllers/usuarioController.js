@@ -2,80 +2,12 @@ import * as usuarioModel from "../models/usuarioModel.js";
 import crypto from "crypto";
 
 export async function listarUsuarios(req, res) {
-    const usuario = await usuarioModel.listarUsuarios();
-    res.status(200).json(usuario);
-
+    const usuarios = await usuarioModel.listarUsuarios();
+    return res.status(200).json(usuarios);
 }
 
-export async function buscarPorId(req, res) {
+export async function buscarUsuarioPorId(req, res) {
     const { id } = req.params;
-    const usuario = await usuarioModel.buscarUsuarioPorId(id);
-  
-
-    if (!usuario) {
-        res.status(404).json({ msg: "Usuário não encontrado" });
-    }
-
-      res.status(200).json(usuario); 
-
-}
-
-export async function criarUsuario(req, res) {
-    const { nome, email, senha } = req.body;
-
-    if (!nome || !email || !senha) {
-        return res.status(400).json({ msg: "Nome, email e senha são obrigatórios" });
-
-    }
-
-    const senha_hash = crypto.createHash("sha256").update(senha).digest("hex");
-    const id = await usuarioModel.criarUsuario({ nome, email, senha_hash });
-
-    return res.status(201).json({ msg: "Usuário criado com sucesso", id });
-}
-
-export async function loginDoUsuario(req, res) {
-
-    const { email, senha } = req.body;
-
-    if (!email || !senha) {
-        return res.status(400).json({ msg: "Email e senha são obrigatórios" });
-    }
-
-    const usuario = await usuarioModel.buscarUsuarioPorEmail(email);
-
-    if (!usuario) {
-        return res.status(404).json({ msg: "Credenciais não encontrado" });
-
-    }
-    const senha_hash = crypto.createHash("sha256").update(senha).digest("hex");
-
-    if (senha_hash !== usuario.senha_hash) {
-        return res.status(401).json({ msg: "Credenciais inválidas" });
-    }
-
-    const token = crypto.randomBytes(24).toString("hex");
-
-    return res.status(200).json({msg: "Login realizado com sucesso", token,
-        usuario: {
-            id: usuario.id,
-            nome: usuario.nome,
-            email: usuario.email
-        }
-    });
-
-}
-
-export async function atualizarUsuario(req, res) {
-    console.log("Requisição recebida para atualizar usuário");
-    const {id } = req.params;
-    const { nome, email, senha } = req.body;
-
-    console.log("ID do usuário a ser atualizado:", id);
-    console.log("Dados recebidos para atualização:", { nome, email, senha });
-    if ( !nome || !email || !senha) {
-        return res.status(400).json({ msg: "Nome, email e senha são obrigatórios" });
-    }
 
     const usuario = await usuarioModel.buscarUsuarioPorId(id);
 
@@ -83,35 +15,136 @@ export async function atualizarUsuario(req, res) {
         return res.status(404).json({ msg: "Usuário não encontrado" });
     }
 
-    const senha_hash = crypto.createHash("sha256").update(senha).digest("hex");
-
-    console.log("Hash da senha:", senha_hash);
-    const atualizado = await usuarioModel.atualizarusuarios(id, { nome, email, senha_hash });
-
-    if (!atualizado) {
-        return res.status(500).json({ msg: "Falha ao atualizar usuário" });
-    }
-
-    return res.status(200).json({ msg: "Usuário atualizado com sucesso" });
+    return res.status(200).json(usuario);
 }
 
-export async function deletarusuarios(req, res) {
-    const {id} = req.params;
+export async function criarUsuario(req, res) {
+    const { nome, email, senha } = req.body;
+
+    if (!nome || !email || !senha) {
+        return res.status(400).json({
+            msg: "Nome, email e senha são obrigatórios"
+        });
+    }
+
+    const senha_hash = crypto
+        .createHash("sha256")
+        .update(senha)
+        .digest("hex");
+
+    const id = await usuarioModel.criarUsuario({
+        nome,
+        email,
+        senha_hash
+    });
+
+    return res.status(201).json({
+        msg: "Usuário criado com sucesso",
+        id
+    });
+}
+
+export async function loginUsuario(req, res) {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({
+            msg: "Email e senha são obrigatórios"
+        });
+    }
+
+    const usuario = await usuarioModel.buscarUsuarioPorEmail(email);
+
+    if (!usuario) {
+        return res.status(404).json({
+            msg: "Credenciais não encontradas"
+        });
+    }
+
+    const senha_hash = crypto
+        .createHash("sha256")
+        .update(senha)
+        .digest("hex");
+
+    if (senha_hash !== usuario.senha_hash) {
+        return res.status(401).json({
+            msg: "Credenciais inválidas"
+        });
+    }
+
+    const token = crypto.randomBytes(24).toString("hex");
+
+    return res.status(200).json({
+        msg: "Login realizado com sucesso",
+        token,
+        usuario: {
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email
+        }
+    });
+}
+
+export async function atualizarUsuario(req, res) {
+    const { id } = req.params;
+    const { nome, email, senha } = req.body;
+
+    if (!nome || !email || !senha) {
+        return res.status(400).json({
+            msg: "Nome, email e senha são obrigatórios"
+        });
+    }
 
     const usuario = await usuarioModel.buscarUsuarioPorId(id);
 
     if (!usuario) {
-        return res.status(404).json ({ msg : "Usuário não encontrado"});
+        return res.status(404).json({
+            msg: "Usuário não encontrado"
+        });
     }
 
-    const deletado = await usuarioModel.deletarusuarios(id);
+    const senha_hash = crypto
+        .createHash("sha256")
+        .update(senha)
+        .digest("hex");
 
-    if (!deletado) {
-        return res.status(500).json({ msg: "Falha ao deletar usuário" });
+    const atualizado = await usuarioModel.atualizarUsuario(id, {
+        nome,
+        email,
+        senha_hash
+    });
+
+    if (!atualizado) {
+        return res.status(500).json({
+            msg: "Falha ao atualizar usuário"
+        });
     }
 
-    return res.status(200).json({ msg :"Usuário deletado com sucesso!"});
+    return res.status(200).json({
+        msg: "Usuário atualizado com sucesso"
+    });
 }
 
+export async function deletarUsuario(req, res) {
+    const { id } = req.params;
 
+    const usuario = await usuarioModel.buscarUsuarioPorId(id);
 
+    if (!usuario) {
+        return res.status(404).json({
+            msg: "Usuário não encontrado"
+        });
+    }
+
+    const deletado = await usuarioModel.deletarUsuario(id);
+
+    if (!deletado) {
+        return res.status(500).json({
+            msg: "Falha ao deletar usuário"
+        });
+    }
+
+    return res.status(200).json({
+        msg: "Usuário deletado com sucesso!"
+    });
+}

@@ -7,7 +7,7 @@ export async function listarJogos() {
     return resultado;
 
 }
-export async function BuscarJogosPorId(id) {
+export async function BuscarJogoId(id) {
     const[resultado] = await pool.query(
         "SELECT id, nome, genero FROM jogos WHERE id = ?", [id]
     );
